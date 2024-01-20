@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using DUA_WPF.CAD_Commands;
+using DUA_WPF.ViewModels;
 using MaterialDesignColors;
 using MaterialDesignThemes.Wpf;
 using System;
@@ -24,32 +25,30 @@ namespace DUA_WPF
     public partial class DUA_Main : Window
     {
         List<LayerTableRecord> layers;
-        public DUA_Main()
+        public DUA_Main(ViewModelBase viewModel)
         {
             loadResources();
             this.SetResourceReference(BackgroundProperty, "MaterialDesignPaper");
             InitializeComponent();
-            DataContext = this;
-            InitApp();
+            DataContext = viewModel;
+        
         }
 
         private void InitApp()
         {
 
-            layers= CMD.GetAllLayers();
-            ComboBoxLayer.ItemsSource = layers.Select(s => s.Name).ToList();
-            ComboBoxLayer.SelectedIndex=0;
+         
         }
 
         private void loadResources()
         {
-           // var datatemplates = new Uri("pack://application:,,,/DUA_WPF;component/Styles/DataTemplates.xaml");
+            var datatemplates = new Uri("pack://application:,,,/DUA_WPF;component/Styles/DataTemplates.xaml");
             var MaterialDesign = new Uri("pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml");
             var bundledTheme = new BundledTheme();
             bundledTheme.BaseTheme = BaseTheme.Dark;
             bundledTheme.PrimaryColor = PrimaryColor.DeepPurple;
             bundledTheme.SecondaryColor = SecondaryColor.Lime;
-         //   this.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = datatemplates });
+           this.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = datatemplates });
             this.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = MaterialDesign });
             this.Resources.MergedDictionaries.Add(bundledTheme);
 
@@ -57,9 +56,8 @@ namespace DUA_WPF
 
         private void ComboBoxLayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-               var x =  CMD.GetPolyLines(layers[ComboBoxLayer.SelectedIndex] );
-            lstBoxPolyLines.ItemsSource = x.Select(s => s.Length);
-            MessageBox.Show(x.Count.ToString());
+
+        
         }
     }
 }

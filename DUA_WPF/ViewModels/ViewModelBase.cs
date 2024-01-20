@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DUA_WPF.ViewModels
 {
-    public class ViewModelBase : ObservableObject
+    public abstract class ViewModelBase : ObservableObject
     {
 
     }

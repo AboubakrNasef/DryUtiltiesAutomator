@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DryUtiltiesAutomator", "Dry
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DUA_WPF", "DUA_WPF\DUA_WPF.csproj", "{C48109C5-2490-4782-89A0-426BA38B2690}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTester", "CommandTester\CommandTester.csproj", "{8B6D5138-9ADD-44C9-BA64-8B9419481D28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C48109C5-2490-4782-89A0-426BA38B2690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C48109C5-2490-4782-89A0-426BA38B2690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C48109C5-2490-4782-89A0-426BA38B2690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

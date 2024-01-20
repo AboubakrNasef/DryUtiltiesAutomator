@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace DUA_WPF.ViewModels
 {
-    internal class MainViewModel : ObservableObject
+    public class MainViewModel : ViewModelBase
     {
 
+        public ViewModelBase CurrentViewModel { get; }
 
 
 
+        public MainViewModel()
+        {
+            CurrentViewModel = this;
+        }
 
     }
 }

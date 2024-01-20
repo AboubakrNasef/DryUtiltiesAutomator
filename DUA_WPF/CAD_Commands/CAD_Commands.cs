@@ -83,7 +83,7 @@ namespace DUA_WPF.CAD_Commands
 
         }
 
-        internal static List<Polyline> GetPolyLines(LayerTableRecord layerTableRecord)
+        internal static List<Polyline> GetPolyLinesFromLayer(LayerTableRecord layerTableRecord)
         {
             List<Polyline> plyLines = new List<Polyline>();
             if (layerTableRecord == null)
@@ -134,5 +134,7 @@ namespace DUA_WPF.CAD_Commands
                 return null;
             }
 }
+
+
     }
 }

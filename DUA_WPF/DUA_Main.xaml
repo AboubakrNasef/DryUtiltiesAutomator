@@ -6,16 +6,5 @@
         xmlns:local="clr-namespace:DUA_WPF"
         mc:Ignorable="d"
         Title="DUA_Main" Height="450" Width="800">
-    <StackPanel>
-        
-        <StackPanel>
-          
-                <StackPanel Orientation="Horizontal">
-                <TextBlock>PolyLines</TextBlock>
-                <ComboBox x:Name="ComboBoxLayer" SelectionChanged="ComboBoxLayer_SelectionChanged" ></ComboBox>
-            </StackPanel>
-            
-            <ListBox x:Name="lstBoxPolyLines"></ListBox>
-        </StackPanel>
-    </StackPanel>
+    <ContentControl Content="{Binding CurrentViewModel}"></ContentControl>
 </Window>
