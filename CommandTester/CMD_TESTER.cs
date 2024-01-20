@@ -7,8 +7,9 @@ using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using Autodesk.Civil.Settings;
-
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 [assembly: CommandClass(typeof(CommandTester.CMD_TESTER))]
 namespace CommandTester
@@ -32,7 +33,7 @@ namespace CommandTester
             if (result.Status != PromptStatus.OK || result.ObjectId.IsNull)
             {
                 ed.WriteMessage("\nError in selecting polyline.");
-                return ;
+                return;
             }
 
             using (Transaction tr = db.TransactionManager.StartTransaction())
@@ -45,7 +46,7 @@ namespace CommandTester
                     if (pline == null)
                     {
                         ed.WriteMessage("\nError in opening polyline.");
-                        return ;
+                        return;
                     }
 
 
@@ -75,12 +76,12 @@ namespace CommandTester
 
                     ed.WriteMessage("\nAlignment created successfully.");
 
-                    return ;
+                    return;
                 }
                 catch (System.Exception ex)
                 {
                     ed.WriteMessage("\nError: " + ex.Message);
-                    return ;
+                    return;
                 }
             }
         }
@@ -224,13 +225,13 @@ namespace CommandTester
 
                     //Curve3d offsetedCurve = curve.Clone() as Curve3d;
                     //offsetedCurve.TranslateBy(new Vector3d(0, 0, 0.6));
-                        CreateOffsetProfile(profile, profileOffset,-0.6);
-                 
-                      
+                    CreateOffsetProfile(profile, profileOffset, -0.6);
 
-                        ed.WriteMessage("\nSurface profile created successfully.");
-                        tr.Commit();
-                 
+
+
+                    ed.WriteMessage("\nSurface profile created successfully.");
+                    tr.Commit();
+
                 }
                 catch (System.Exception ex)
                 {
@@ -239,31 +240,31 @@ namespace CommandTester
             }
         }
 
-        private static void CreateOffsetProfile(Profile profile, Profile profileOffset,double offset)
+        private static void CreateOffsetProfile(Profile profile, Profile profileOffset, double offset)
         {
-          
-          
+
+
             foreach (ProfileEntity entity in profile.Entities)
             {
-               
+
                 switch (entity.EntityType)
                 {
                     case ProfileEntityType.Tangent:
-                        var p1 = new Point2d(entity.StartStation, entity.StartElevation+offset);
+                        var p1 = new Point2d(entity.StartStation, entity.StartElevation + offset);
                         var p2 = new Point2d(entity.EndStation, entity.EndElevation + offset);
-                        profileOffset.Entities.AddFixedTangent(p1,p2);
+                        profileOffset.Entities.AddFixedTangent(p1, p2);
 
                         break;
-                  
+
                     default:
                         break;
                 }
-               
+
             }
 
-       
-                
-                }
+
+
+        }
 
         public static List<ProfileStyle> ListProfileStyles()
         {
@@ -402,19 +403,19 @@ namespace CommandTester
 
                     // alignment
                     Alignment alignment = tr.GetObject(result.ObjectId, OpenMode.ForRead) as Alignment;
-          
+
                     var styles = ListProfileViewStyles();
-                var bandSetStyles= ListProfileViewBandSets();   
+                    var bandSetStyles = ListProfileViewBandSets();
                     // Create a profile from the alignment and surface
                     SettingsObjectLayer objectLayer = civilDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Profile);
 
-                   var pointResult =  ed.GetPoint("Select Point Of Insertion");
+                    var pointResult = ed.GetPoint("Select Point Of Insertion");
                     if (pointResult.Status == PromptStatus.OK)
                     {
                         Point3d insertionPoint = pointResult.Value;
                         var profileViewID = ProfileView.Create(alignment.Id, insertionPoint, "ProfileView", bandSetStyles[2].Id, styles[7].Id);
                         ProfileView profileView = tr.GetObject(result.ObjectId, OpenMode.ForRead) as ProfileView;
-                  
+
 
 
 
@@ -422,7 +423,7 @@ namespace CommandTester
                         ed.WriteMessage("\n profile view created successfully.");
                         tr.Commit();
                     }
-           
+
 
                 }
                 catch (System.Exception ex)
@@ -496,7 +497,7 @@ namespace CommandTester
 
                     // Get the AlignmentStyleCollection
                     ProfileViewBandSetStyleCollection ProfileBandsCol = civilDoc.Styles.ProfileViewBandSetStyles;
-                    
+
                     // Loop through each alignment style
                     foreach (ObjectId styleId in ProfileBandsCol)
                     {
@@ -517,6 +518,107 @@ namespace CommandTester
             }
         }
 
+        //Corridors
+
+        [CommandMethod("za_CreateCorridor")]
+        public static void CreateCorridor()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+            // Prompt the user to select an alignment
+            PromptEntityOptions promptOptions = new PromptEntityOptions("\nSelect an alignment:");
+            promptOptions.SetRejectMessage("\nInvalid selection. Please select an alignment.");
+            promptOptions.AddAllowedClass(typeof(Alignment), false);
+
+            PromptEntityResult result = ed.GetEntity(promptOptions);
+
+            if (result.Status != PromptStatus.OK || result.ObjectId.IsNull)
+            {
+                ed.WriteMessage("\nError in selecting Alignment.");
+                return;
+            }
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                try
+                {
+
+                    CivilDocument civilDoc = CivilApplication.ActiveDocument;
+
+                    if (civilDoc == null)
+                    {
+                        ed.WriteMessage("\nCivil 3D document not found.");
+                        return;
+                    }
+
+                    // alignment
+                    Alignment alignment = tr.GetObject(result.ObjectId, OpenMode.ForRead) as Alignment;
+                    List<Profile> profiles = GetProfilesFromAlignment(alignment, tr);
+
+                    Profile prof = profiles.First(x => x.ProfileType == ProfileType.FG);
+
+                    // Create a profile from the alignment and surface
+                    SettingsObjectLayer objectLayer = civilDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Profile);
+
+
+                    // Create a new Corridor
+                    var assembles = ListAssemblies();
+                    ObjectId newCorridorId = civilDoc.CorridorCollection.Add("Corridor1", "BaseLine1", alignment.Id, prof.Id, "Region1", assembles[0].Id);
+
+                    Corridor corridor = tr.GetObject(newCorridorId, OpenMode.ForWrite) as Corridor;
+
+
+                    corridor.Rebuild();
+
+                    ed.WriteMessage("\n profile view created successfully.");
+                    tr.Commit();
+
+
+
+                }
+                catch (System.Exception ex)
+                {
+                    ed.WriteMessage("\nError: " + ex.Message);
+                }
+            }
+        }
+
+        private static List<Profile> GetProfilesFromAlignment(Alignment alignment, Transaction tr)
+        {
+            var profiles = new List<Profile>();
+            var profileIds = alignment.GetProfileIds();
+
+            foreach (ObjectId profileId in profileIds)
+            {
+                var profile = tr.GetObject(profileId, OpenMode.ForRead) as Profile;
+
+                profiles.Add(profile);
+            }
+
+            return profiles;
+        }
+
+        public static List<Assembly> ListAssemblies()
+        {
+            List<Assembly> assemblies = new List<Assembly>();
+            CivilDocument doc = CivilApplication.ActiveDocument;
+            Editor ed =
+            Application.DocumentManager.MdiActiveDocument.Editor;
+
+            using (Transaction ts =
+            Application.DocumentManager.MdiActiveDocument.
+            Database.TransactionManager.StartTransaction())
+            {
+                foreach (ObjectId objId in doc.AssemblyCollection)
+                {
+                    Assembly myCorridor = ts.GetObject(objId, OpenMode.ForRead) as Assembly;
+                    assemblies.Add(myCorridor);
+                }
+            }
+
+
+            return assemblies;
+        }
 
 
     }
