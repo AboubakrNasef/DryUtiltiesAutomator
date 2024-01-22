@@ -34,11 +34,7 @@ namespace DUA_WPF
         
         }
 
-        private void InitApp()
-        {
-
-         
-        }
+   
 
         private void loadResources()
         {

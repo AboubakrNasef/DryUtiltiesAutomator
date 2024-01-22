@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DUA_WPF", "DUA_WPF\DUA_WPF.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTester", "CommandTester\CommandTester.csproj", "{8B6D5138-9ADD-44C9-BA64-8B9419481D28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp_Tester", "WpfApp_Tester\WpfApp_Tester.csproj", "{3CB75592-11CA-422C-8A6F-7D2A8212523E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModalControl", "ModalControl\ModalControl.csproj", "{3FE7C158-B56E-4F5A-BC33-E6BAEA13CD32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B6D5138-9ADD-44C9-BA64-8B9419481D28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CB75592-11CA-422C-8A6F-7D2A8212523E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CB75592-11CA-422C-8A6F-7D2A8212523E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CB75592-11CA-422C-8A6F-7D2A8212523E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CB75592-11CA-422C-8A6F-7D2A8212523E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE7C158-B56E-4F5A-BC33-E6BAEA13CD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE7C158-B56E-4F5A-BC33-E6BAEA13CD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE7C158-B56E-4F5A-BC33-E6BAEA13CD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE7C158-B56E-4F5A-BC33-E6BAEA13CD32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

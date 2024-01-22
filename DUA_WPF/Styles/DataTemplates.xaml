@@ -4,9 +4,17 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
-    <DataTemplate DataType="{x:Type vm:MainViewModel}">
-        <v:MainView />
+    
+
+    <DataTemplate DataType="{x:Type vm:DrawerListViewModel}">
+        <v:DrawerList />
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:GroupsViewModel}">
+        <v:GroupsView />
+    </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:TemplatesViewModel}">
+        <v:TemplatesView />
+    </DataTemplate>
 </ResourceDictionary>

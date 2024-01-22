@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
 using DUA_WPF;
+using DUA_WPF.Navigator;
 using DUA_WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,16 +26,19 @@ namespace DryUtiltiesAutomator
             IServiceCollection services = new ServiceCollection();
 
             services.AddSingleton<MainViewModel>();
+            services.AddSingleton<GroupsViewModel>();
+            services.AddSingleton<TemplatesViewModel>();
+            services.AddSingleton<INavigator,Navigator>();
 
 
-            
+
 
 
 
             return services.BuildServiceProvider();
         }
 
-        [CommandMethod("OpenWPFWindow")]
+        [CommandMethod("asd_OpenWPFWindow")]
         public void CmdOpenWPFWindow()
         {
             ViewModelBase vm = _serviceProvider.GetRequiredService<MainViewModel>() ;

@@ -16,14 +16,13 @@ using System.Windows.Shapes;
 namespace DUA_WPF.Views
 {
     /// <summary>
-    /// Interaction logic for MainView.xaml
+    /// Interaction logic for GroupsView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class GroupsView : UserControl
     {
-        public MainView()
+        public GroupsView()
         {
             InitializeComponent();
-
         }
     }
 }

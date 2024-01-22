@@ -4,7 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DUA_WPF"
+                xmlns:views="clr-namespace:DUA_WPF.Views"
         mc:Ignorable="d"
-        Title="DUA_Main" Height="450" Width="800">
-    <ContentControl Content="{Binding CurrentViewModel}"></ContentControl>
+        Title="DUA_Main" Height="720" Width="1280">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ContentControl Grid.Column="0" Content="{Binding DrawerListViewModel}"></ContentControl>
+        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"></ContentControl>
+     
+    </Grid>
+  
 </Window>

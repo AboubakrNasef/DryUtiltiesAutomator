@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace DUA_WPF.ViewModels
 {
+    public delegate TViewModel CreateViewModel<TViewModel>() where TViewModel : ViewModelBase;
+
     public abstract class ViewModelBase : ObservableObject
     {
 
