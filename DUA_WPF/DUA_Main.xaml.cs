@@ -24,13 +24,13 @@ namespace DUA_WPF
     /// </summary>
     public partial class DUA_Main : Window
     {
-        List<LayerTableRecord> layers;
+       
         public DUA_Main(ViewModelBase viewModel)
         {
-            loadResources();
             this.SetResourceReference(BackgroundProperty, "MaterialDesignPaper");
             InitializeComponent();
             DataContext = viewModel;
+            loadResources();
         
         }
 
@@ -43,17 +43,16 @@ namespace DUA_WPF
             var bundledTheme = new BundledTheme();
             bundledTheme.BaseTheme = BaseTheme.Dark;
             bundledTheme.PrimaryColor = PrimaryColor.DeepPurple;
-            bundledTheme.SecondaryColor = SecondaryColor.Lime;
-           this.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = datatemplates });
+            bundledTheme.SecondaryColor = SecondaryColor.Purple;
+        
+
+            this.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = datatemplates });
             this.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = MaterialDesign });
+            this.Resources.MergedDictionaries.Add(bundledTheme);
             this.Resources.MergedDictionaries.Add(bundledTheme);
 
         }
 
-        private void ComboBoxLayer_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        
-        }
+      
     }
 }

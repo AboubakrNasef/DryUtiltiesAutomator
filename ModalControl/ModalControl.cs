@@ -18,6 +18,22 @@ namespace ModalControl
  
     public class ModalControl : ContentControl
     {
+
+
+
+
+        public ICommand CloseCommand
+        {
+            get { return (ICommand)GetValue(CloseCommandProperty); }
+            set { SetValue(CloseCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CloseCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CloseCommandProperty =
+            DependencyProperty.Register("CloseCommand", typeof(ICommand), typeof(ModalControl), new PropertyMetadata(null));
+
+
+
         Button CloseButton;
         public event EventHandler Close;
         public static readonly DependencyProperty IsOpenProperty =
@@ -42,7 +58,7 @@ namespace ModalControl
 
 
         }
-
+        
         public bool IsOpen
         {
             get { return (bool)GetValue(IsOpenProperty); }
@@ -73,7 +89,8 @@ namespace ModalControl
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            IsOpen = false;
+
+            CloseCommand.Execute(this);
         }
      
     }

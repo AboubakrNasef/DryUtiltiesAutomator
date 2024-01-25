@@ -4,14 +4,44 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DUA_WPF"
-                xmlns:views="clr-namespace:DUA_WPF.Views"
+        xmlns:views="clr-namespace:DUA_WPF.Views"
+        xmlns:MTDColor="clr-namespace:MaterialDesignColors;assembly=MaterialDesignColors"
+        xmlns:modal="clr-namespace:ModalControl;assembly=ModalControl"
+         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+     TextElement.FontWeight="Regular"
+     TextElement.FontSize="13"
+     TextOptions.TextFormattingMode="Ideal"
+     TextOptions.TextRenderingMode="Auto"
+     Background="{DynamicResource MaterialDesignPaper}"
+     FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="DUA_Main" Height="720" Width="1280">
+        MinHeight="700" MinWidth="700"
+        Title="DUA_Main" Height="850" Width="800">
+    <Window.Resources>
+        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+             <ResourceDictionary>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                  
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".3*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <modal:ModalControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#2C2C2C" x:Name="AppModal" CloseCommand="{Binding CloseModalCommand}" IsOpen="{Binding IsModalOpen}" Content="{Binding ModalContent}" Grid.ColumnSpan="2" Panel.ZIndex="10"></modal:ModalControl>
+
         <ContentControl Grid.Column="0" Content="{Binding DrawerListViewModel}"></ContentControl>
         <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"></ContentControl>
      

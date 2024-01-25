@@ -415,7 +415,7 @@ namespace CommandTester
                         Point3d insertionPoint = pointResult.Value;
                         var profileViewID = ProfileView.Create(alignment.Id, insertionPoint, "ProfileView", bandSetStyles[2].Id, styles[7].Id);
                         ProfileView profileView = tr.GetObject(result.ObjectId, OpenMode.ForRead) as ProfileView;
-
+                       
 
 
 

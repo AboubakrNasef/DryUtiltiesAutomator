@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.Runtime;
 using DUA_WPF;
 using DUA_WPF.Navigator;
+using DUA_WPF.Services;
 using DUA_WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +19,7 @@ namespace DryUtiltiesAutomator
         public IServiceProvider _serviceProvider;
         public DUA_APP()
         {
-            _serviceProvider=CreateServiceProvider();
+            
         }
 
         private static IServiceProvider CreateServiceProvider()
@@ -28,7 +29,11 @@ namespace DryUtiltiesAutomator
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<GroupsViewModel>();
             services.AddSingleton<TemplatesViewModel>();
+
             services.AddSingleton<INavigator,Navigator>();
+            services.AddSingleton<ICADService,CADService>();
+            services.AddSingleton<ITemplateService,TemplateService>();
+            services.AddSingleton<IModalService,ModalService>();
 
 
 
@@ -41,14 +46,20 @@ namespace DryUtiltiesAutomator
         [CommandMethod("asd_OpenWPFWindow")]
         public void CmdOpenWPFWindow()
         {
+            _serviceProvider = CreateServiceProvider();
             ViewModelBase vm = _serviceProvider.GetRequiredService<MainViewModel>() ;
+
             Window expWindow = new DUA_Main(vm);
+            expWindow.Closed += ExpWindow_Closed;
             var _expResult = App.ShowModalWindow(expWindow);
 
         }
 
-
-
+        private void ExpWindow_Closed(object sender, EventArgs e)
+        {
+          
+            _serviceProvider = null;
+        }
 
         public void Initialize()
         {

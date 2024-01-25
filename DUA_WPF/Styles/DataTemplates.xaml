@@ -17,4 +17,27 @@
     <DataTemplate DataType="{x:Type vm:TemplatesViewModel}">
         <v:TemplatesView />
     </DataTemplate>
+
+
+
+    <DataTemplate DataType="{x:Type vm:GroupViewModel}">
+        <v:GroupView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:TemplateViewModel}">
+        <v:TemplateView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AlignmentTemplateViewModel}">
+        <v:AlignmentTemplateView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:CorridorStyleTemplateViewModel}">
+        <v:CorridorStyleTemplateView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:ProfileTemplateViewModel}">
+        <v:ProfileTemplateView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ProfileViewStyleViewModel}">
+        <v:ProfileViewTemplateView />
+    </DataTemplate>
 </ResourceDictionary>

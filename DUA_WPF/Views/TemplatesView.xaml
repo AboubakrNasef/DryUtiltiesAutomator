@@ -19,15 +19,25 @@
           
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 20 0">
 
-                <Button  Margin="5">Remove</Button>
-                <Button   Margin="5">Add</Button>
+                <Button Command="{Binding DeleteTemplateCommand}" Margin="5">Remove</Button>
+                <Button Command="{Binding AddTemplateCommand}"  Margin="5">Add</Button>
             </StackPanel>
 
-            <ListView Grid.Row="1">
-                <ListViewItem>Hello1</ListViewItem>
-                <ListViewItem>Hello2</ListViewItem>
-                <ListViewItem>Hello3</ListViewItem>
-                <ListViewItem>Hello4</ListViewItem>
+            <ListView Grid.Row="1" ItemsSource="{Binding Templates}" SelectedIndex="{Binding SelectedTemplateIndex}">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                            <GridViewColumn Header="Edit">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding EditCommand}">Edit</Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                       </GridView.Columns>
+                    </GridView>
+                </ListView.View>
             </ListView>
 
        </Grid>
