@@ -26,18 +26,22 @@ namespace DUA_WPF.ViewModels
         public int SelectedProfileStyleIndex
         {
             get { return _selectedProfileStyleId; }
-            set { _selectedProfileStyleId = value; OnPropertyChanged(nameof(_selectedProfileStyleId));
+            set { _selectedProfileStyleId = value; 
                 SelectedProfileStyle = ProfileStyles[_selectedProfileStyleId];
+                OnPropertyChanged(nameof(_selectedProfileStyleId));
+                OnPropertyChanged(nameof(IsValid));
+                ValidationChanged?.Invoke(IsValid);
             }
         }
 
-
+        public event Action<bool> ValidationChanged;
+       
         #endregion
         #region Props
         public string Name
         {
             get { return _name; }
-            set { _name = value;OnPropertyChanged(nameof(Name)); OnPropertyChanged(nameof(FullName)); }
+            set { _name = value;OnPropertyChanged(nameof(Name)); OnPropertyChanged(nameof(FullName)); OnPropertyChanged(nameof(IsValid)); ValidationChanged?.Invoke(IsValid); }
         }
         public string Prefix
         {
@@ -90,6 +94,12 @@ namespace DUA_WPF.ViewModels
             Name = "Profile";
             _cADService = cADService;
             Offset = 0.6;
+            if (ProfileStyles.Count>0)
+            {
+                SelectedProfileStyleIndex = 0;
+            }
+
+
         }
     }
 }

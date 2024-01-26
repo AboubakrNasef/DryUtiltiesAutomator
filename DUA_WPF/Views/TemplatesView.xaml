@@ -14,13 +14,13 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height=".2*"/>
                 <RowDefinition/>
-         
+                <RowDefinition Height=".2*"/>
             </Grid.RowDefinitions>
           
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 20 0">
 
-                <Button Command="{Binding DeleteTemplateCommand}" Margin="5">Remove</Button>
-                <Button Command="{Binding AddTemplateCommand}"  Margin="5">Add</Button>
+                <Button Command="{Binding DeleteTemplateCommand}" IsEnabled="{Binding CanDeleteEnabled}" Margin="5">Remove</Button>
+                <Button Command="{Binding AddTemplateCommand}"   Margin="5">Add</Button>
             </StackPanel>
 
             <ListView Grid.Row="1" ItemsSource="{Binding Templates}" SelectedIndex="{Binding SelectedTemplateIndex}">

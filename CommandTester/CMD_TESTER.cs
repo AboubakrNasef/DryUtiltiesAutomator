@@ -10,12 +10,137 @@ using Autodesk.Civil.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Entity = Autodesk.AutoCAD.DatabaseServices.Entity;
+using Exception = Autodesk.AutoCAD.Runtime.Exception;
 
 [assembly: CommandClass(typeof(CommandTester.CMD_TESTER))]
 namespace CommandTester
 {
     public class CMD_TESTER
     {
+
+        [CommandMethod("za_SelectAllFromLayer")]
+        public void SelectAllFromLayer()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            // Specify the layer names directly
+            string sourceLayerName = "0";
+
+            TypedValue[] tvs = new TypedValue[] {
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<and"),
+            new TypedValue(Convert.ToInt32(DxfCode.LayerName), sourceLayerName),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<or"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "LWPOLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE2D"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE3d"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "or>"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "and>")
+        };
+           
+            SelectionFilter sf = new SelectionFilter(tvs);
+
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+
+                if (!lt.Has(sourceLayerName))
+                {
+                    ed.WriteMessage("\nSource layer not found.");
+                    return;
+                }
+
+                ObjectId sourceLayerId = lt[sourceLayerName];
+
+                // Filter entities based on the source layer
+                PromptSelectionResult psr = ed.SelectAll(sf);
+
+                if (psr.Status == PromptStatus.OK)
+                {
+                    int changedCount = 0;
+
+                    foreach (ObjectId id in psr.Value.GetObjectIds())
+                    {
+                        Entity ent = (Entity)tr.GetObject(id, OpenMode.ForRead);
+                        ent.LayerId = sourceLayerId; // Change the layer ID
+
+                        // Alternatively, you can use:
+                        // ent.Layer = targetLayerName;
+
+                        changedCount++;
+
+                       
+                    }
+
+                ed.WriteMessage("Count:"+ changedCount);
+                }
+                tr.Commit();
+            }
+        }
+
+        [CommandMethod("za_Selectpolys")]
+        public void  SelectAllPolyLines()
+        {
+            Document _doc = Application.DocumentManager.MdiActiveDocument;
+            Database _DB = _doc.Database;
+            Editor _editor = _doc.Editor;
+            List<Polyline> polylines = new List<Polyline>();
+            TypedValue[] tvs = new TypedValue[] {
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<and"),
+
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<or"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "LWPOLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE2D"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE3d"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "or>"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "and>")};
+            SelectionFilter sf = new SelectionFilter(tvs);
+
+            try
+            {
+
+
+                using (DocumentLock dockLock = _doc.LockDocument())
+                {
+                    using (Transaction trans = _DB.TransactionManager.StartTransaction())
+                    {
+                        PromptSelectionResult psr = _editor.GetSelection(sf);
+
+                        if (psr.Status == PromptStatus.OK)
+                        {
+
+
+                            foreach (ObjectId id in psr.Value.GetObjectIds())
+                            {
+                                var ent = trans.GetObject(id, OpenMode.ForRead) as Polyline;
+                                if (ent is Polyline)
+                                {
+                                    polylines.Add(ent);
+                                }
+
+
+
+                            }
+
+
+                        }
+                        _editor.WriteMessage(polylines.Count.ToString());
+                        trans.Commit();
+                    }
+                }
+              
+            }
+            catch (Exception)
+            {
+
+                
+            }
+        }
+
 
 
         [CommandMethod("za_CreateAlignmentFrom_PolyLine")]
@@ -86,8 +211,7 @@ namespace CommandTester
             }
         }
 
-
-
+    
         public static List<AlignmentStyle> ListAlignmentStyles()
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
@@ -415,7 +539,7 @@ namespace CommandTester
                         Point3d insertionPoint = pointResult.Value;
                         var profileViewID = ProfileView.Create(alignment.Id, insertionPoint, "ProfileView", bandSetStyles[2].Id, styles[7].Id);
                         ProfileView profileView = tr.GetObject(result.ObjectId, OpenMode.ForRead) as ProfileView;
-                       
+
 
 
 

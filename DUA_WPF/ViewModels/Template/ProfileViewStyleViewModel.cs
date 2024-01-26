@@ -29,6 +29,8 @@ namespace DUA_WPF.ViewModels
             set { _selectedProfileViewStyleIndex = value;
                 SelectedProfileViewStyle = ProfileViewStyles[_selectedProfileViewStyleIndex];
                 OnPropertyChanged(nameof(SelectedProfileViewStyleIndex));
+                OnPropertyChanged(nameof(IsValid));
+                ValidationChanged?.Invoke(IsValid);
             }
         }
 
@@ -40,10 +42,13 @@ namespace DUA_WPF.ViewModels
             set { _selectedProfileViewBandSetsIndex = value;
                 SelectedProfileViewBands = ProfileViewBandSets[_selectedProfileViewBandSetsIndex];
                 OnPropertyChanged(nameof(SelectedProfileViewBandSetsStyleIndex));
+                OnPropertyChanged(nameof(IsValid));
+                ValidationChanged?.Invoke(IsValid);
             }
         }
 
-
+        public event Action<bool> ValidationChanged;
+  
         #endregion
         #region Props
         public string Name
@@ -62,7 +67,8 @@ namespace DUA_WPF.ViewModels
         public ProfileViewBandSetStyle SelectedProfileViewBands
         {
             get { return _profile_View_Bands; }
-            set { _profile_View_Bands = value; OnPropertyChanged(nameof(SelectedProfileViewBands)); }
+            set { _profile_View_Bands = value;
+                OnPropertyChanged(nameof(SelectedProfileViewBands)); }
         }
 
 
@@ -95,6 +101,16 @@ namespace DUA_WPF.ViewModels
         {
                 _cADService = cADService;
                 _alignment = alignment;
+
+
+            if (ProfileViewStyles.Count > 0)
+            {
+                SelectedProfileViewStyleIndex = 0;
+            }
+            if (ProfileViewBandSets.Count > 0)
+            {
+                SelectedProfileViewBandSetsStyleIndex = 0;
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace DryUtiltiesAutomator
         public IServiceProvider _serviceProvider;
         public DUA_APP()
         {
-            
+            _serviceProvider = CreateServiceProvider();
         }
 
         private static IServiceProvider CreateServiceProvider()
@@ -29,7 +29,6 @@ namespace DryUtiltiesAutomator
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<GroupsViewModel>();
             services.AddSingleton<TemplatesViewModel>();
-
             services.AddSingleton<INavigator,Navigator>();
             services.AddSingleton<ICADService,CADService>();
             services.AddSingleton<ITemplateService,TemplateService>();
@@ -46,19 +45,27 @@ namespace DryUtiltiesAutomator
         [CommandMethod("asd_OpenWPFWindow")]
         public void CmdOpenWPFWindow()
         {
-            _serviceProvider = CreateServiceProvider();
-            ViewModelBase vm = _serviceProvider.GetRequiredService<MainViewModel>() ;
+            try
+            {
+                ViewModelBase vm = _serviceProvider.GetRequiredService<MainViewModel>();
 
-            Window expWindow = new DUA_Main(vm);
-            expWindow.Closed += ExpWindow_Closed;
-            var _expResult = App.ShowModalWindow(expWindow);
+                Window expWindow = new DUA_Main(vm);
+                expWindow.Closed += ExpWindow_Closed;
+                var _expResult = App.ShowModalWindow(expWindow);
+            }
+            catch (System.Exception e)
+            {
+
+                MessageBox.Show(e.Message);
+            }
+        
 
         }
 
         private void ExpWindow_Closed(object sender, EventArgs e)
         {
           
-            _serviceProvider = null;
+           // _serviceProvider = null;
         }
 
         public void Initialize()

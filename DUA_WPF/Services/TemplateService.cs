@@ -11,16 +11,24 @@ namespace DUA_WPF.Services
     public class TemplateService : ITemplateService
     {
         ObservableCollection<TemplateViewModel> _templates;
+
+       
+
         public ObservableCollection<TemplateViewModel> Templates { get => _templates; }
 
         public TemplateService()
         {
                 _templates = new ObservableCollection<TemplateViewModel>();
+           
         }
+
+    
     }
 
     public interface ITemplateService
     {
+
          ObservableCollection<TemplateViewModel> Templates { get;  }
+     
     }
 }

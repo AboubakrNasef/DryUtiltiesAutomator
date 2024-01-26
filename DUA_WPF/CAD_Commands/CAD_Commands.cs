@@ -1,10 +1,15 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.Aec.Geometry;
+using Autodesk.Aec.Modeler;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.DatabaseServices.Filters;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Runtime;
 using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
+using Autodesk.Civil.Settings;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +18,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using static Autodesk.AutoCAD.DatabaseServices.AssocLoftedSurfaceActionBody;
 using Entity = Autodesk.AutoCAD.DatabaseServices.Entity;
+using Exception = Autodesk.AutoCAD.Runtime.Exception;
+using Profile = Autodesk.Civil.DatabaseServices.Profile;
 
 namespace DUA_WPF.CAD_Commands
 {
@@ -109,7 +117,7 @@ namespace DUA_WPF.CAD_Commands
                             // Open the BlockTableRecord for model space
                             BlockTableRecord modelSpace = (BlockTableRecord)trans.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForRead);
 
-                    
+
                             // Iterate through entities in model space
                             foreach (ObjectId entityId in modelSpace)
                             {
@@ -122,20 +130,20 @@ namespace DUA_WPF.CAD_Commands
                                 }
                             }
                         }
-                     
+
 
                         trans.Commit();
                     }
                 }
                 return plyLines;
             }
-        
+
             catch (Exception)
             {
 
                 return null;
             }
-}
+        }
 
         internal static List<Assembly> GetAllAssemblies()
         {
@@ -218,7 +226,7 @@ namespace DUA_WPF.CAD_Commands
                     {
                         // Get the AlignmentStyleCollection
                         ProfileViewBandSetStyleCollection ProfileBandsCol = _CDoc.Styles.ProfileViewBandSetStyles;
-                    
+
                         // Loop through each alignment style
                         foreach (ObjectId styleId in ProfileBandsCol)
                         {
@@ -255,14 +263,14 @@ namespace DUA_WPF.CAD_Commands
                     using (Transaction trans = _DB.TransactionManager.StartTransaction())
                     {
 
-                      
+
                         var surfacesIDS = _CDoc.GetSurfaceIds();
                         foreach (ObjectId item in surfacesIDS)
                         {
                             TinSurface surface = trans.GetObject(item, OpenMode.ForRead) as TinSurface;
                             Surfaces.Add(surface);
                         }
-                      
+
                         trans.Commit();
                     }
                 }
@@ -464,5 +472,362 @@ namespace DUA_WPF.CAD_Commands
                 return null;
             }
         }
+
+        internal static List<Polyline> GetPolylinesFromLayer(LayerTableRecord layer)
+        {
+            List<Polyline> polylines = new List<Polyline>();
+            TypedValue[] tvs = new TypedValue[] {
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<and"),
+            new TypedValue(Convert.ToInt32(DxfCode.LayerName), layer.Name),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<or"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "LWPOLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE2D"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE3d"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "or>"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "and>")};
+            SelectionFilter sf = new SelectionFilter(tvs);
+            try
+            {
+
+
+                using (DocumentLock dockLock = _doc.LockDocument())
+                {
+                    using (Transaction trans = _DB.TransactionManager.StartTransaction())
+                    {
+                        PromptSelectionResult psr = _editor.SelectAll(sf);
+
+                        if (psr.Status == PromptStatus.OK)
+                        {
+
+
+                            foreach (ObjectId id in psr.Value.GetObjectIds())
+                            {
+                                var ent = trans.GetObject(id, OpenMode.ForRead) as Polyline;
+                                if (ent is Polyline && ent.LayerId == layer.Id)
+                                {
+                                    polylines.Add(ent);
+                                }
+
+
+
+                            }
+
+
+                        }
+
+                        trans.Commit();
+                    }
+                }
+                return polylines;
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+
+        internal static List<Polyline> SelectPolyLines()
+        {
+            List<Polyline> polylines = new List<Polyline>();
+            TypedValue[] tvs = new TypedValue[] {
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<and"),
+
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "<or"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "LWPOLYLINE"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE2D"),
+            new TypedValue(Convert.ToInt32(DxfCode.Start), "POLYLINE3d"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "or>"),
+            new TypedValue(Convert.ToInt32(DxfCode.Operator), "and>")};
+            SelectionFilter sf = new SelectionFilter(tvs);
+
+            try
+            {
+
+
+                using (DocumentLock dockLock = _doc.LockDocument())
+                {
+                    using (Transaction trans = _DB.TransactionManager.StartTransaction())
+                    {
+                        PromptSelectionResult psr = _editor.GetSelection(sf);
+
+                        if (psr.Status == PromptStatus.OK)
+                        {
+
+
+                            foreach (ObjectId id in psr.Value.GetObjectIds())
+                            {
+                                var ent = trans.GetObject(id, OpenMode.ForRead) as Polyline;
+                                if (ent is Polyline)
+                                {
+                                    polylines.Add(ent);
+                                }
+
+
+
+                            }
+
+
+                        }
+
+                        trans.Commit();
+                    }
+                }
+                return polylines;
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+
+
+        internal static Alignment CreateAlignmentFromPolyLine(Polyline pline, string AlignmentName, AlignmentStyle alignmentStyle, AlignmentLabelSetStyle alignmentLabelSets)
+        {
+            Alignment alignment = null;
+
+            try
+            {
+
+
+                using (DocumentLock dockLock = _doc.LockDocument())
+                {
+                    using (Transaction trans = _DB.TransactionManager.StartTransaction())
+                    {
+
+
+
+                        // create some polyline options for creating the new alignment
+                        PolylineOptions plops = new PolylineOptions();
+                        plops.AddCurvesBetweenTangents = true;
+                        plops.EraseExistingEntities = true;
+                        plops.PlineId = pline.ObjectId;
+
+                        SettingsCmdCreateAlignmentEntities settingsCmdCreateAlignmentEntities = _CDoc.Settings.GetSettings<SettingsCmdCreateAlignmentEntities>();
+                        double tempRadiusHolder = settingsCmdCreateAlignmentEntities.CreateFromEntities.Radius.Value;
+                        settingsCmdCreateAlignmentEntities.CreateFromEntities.Radius.Value = 0.1;
+                        SettingsObjectLayer objectLayer = _CDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Alignment);
+
+
+                        ObjectId AlignmentID = Alignment.Create(
+                        _CDoc,
+                        plops,
+                        AlignmentName,
+                        ObjectId.Null, objectLayer.LayerId,
+                        alignmentStyle.Id,
+                        alignmentLabelSets.Id);
+                        settingsCmdCreateAlignmentEntities.CreateFromEntities.Radius.Value = tempRadiusHolder;
+                        alignment = trans.GetObject(AlignmentID, OpenMode.ForRead) as Alignment;
+                        trans.Commit();
+                    }
+                }
+                return alignment;
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+
+
+
+
+        internal static Profile CreateSurfaceProfile(Alignment alignment, TinSurface surface, ProfileStyle profileStyle, ProfileLabelSetStyle profileLabelSet)
+        {
+            Profile profile = null;
+            using (DocumentLock dockLock = _doc.LockDocument())
+            {
+                using (Transaction tr = _DB.TransactionManager.StartTransaction())
+                {
+                    try
+                    {
+
+
+
+
+                        // Create a profile from the alignment and surface
+                        SettingsObjectLayer objectLayer = _CDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Profile);
+
+                        ObjectId profileId = Profile.CreateFromSurface(surface.Name + "-Profile", alignment.ObjectId, surface.ObjectId, objectLayer.LayerId, profileStyle.ObjectId, profileLabelSet.ObjectId);
+                        profile = tr.GetObject(profileId, OpenMode.ForRead) as Profile;
+
+
+
+
+
+
+                        tr.Commit();
+
+                    }
+                    catch (System.Exception ex)
+                    {
+                    }
+
+                    return profile;
+                }
+            }
+        }
+
+        internal static Profile CreateOffsetProfile(Alignment alignment, Profile profile, string profileName, double offset, ProfileStyle profileStyle, ProfileLabelSetStyle profileLabelSet)
+        {
+
+
+            Profile offseted_profile = null;
+            using (DocumentLock dockLock = _doc.LockDocument())
+            {
+                using (Transaction tr = _DB.TransactionManager.StartTransaction())
+                {
+                    try
+                    {
+                        // Create a profile from the alignment and surface
+                        SettingsObjectLayer objectLayer = _CDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Profile);
+
+                        var profileOffsetID = Profile.CreateByLayout(profileName, alignment.ObjectId, objectLayer.LayerId, profileStyle.ObjectId, profileLabelSet.ObjectId);
+                        offseted_profile = tr.GetObject(profileOffsetID, OpenMode.ForRead) as Profile;
+
+
+
+
+
+                        foreach (ProfileEntity entity in profile.Entities)
+                        {
+
+                            switch (entity.EntityType)
+                            {
+                                case ProfileEntityType.Tangent:
+                                    var p1 = new Point2d(entity.StartStation, entity.StartElevation + offset);
+                                    var p2 = new Point2d(entity.EndStation, entity.EndElevation + offset);
+                                    offseted_profile.Entities.AddFixedTangent(p1, p2);
+
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                        }
+
+                        tr.Commit();
+                    }
+                    catch (System.Exception ex)
+                    {
+                    }
+
+                    return offseted_profile;
+                }
+            }
+
+
+
+
+
+
+        }
+
+
+        internal static Point3d GetPoint()
+        {
+
+            return _editor.GetPoint("Select Top Left Point For Profile Views").Value;
+        }
+
+       
+        public static ProfileView CreateProfileView(Alignment alignment, Point3d insertionPoint, ProfileViewBandSetStyle profileViewBandStyle, ProfileViewStyle profileViewStyle)
+        {
+            ProfileView profileView = null;
+
+            using (DocumentLock dockLock = _doc.LockDocument())
+            {
+                using (Transaction tr = _DB.TransactionManager.StartTransaction())
+                {
+                    try
+                    {
+
+
+
+                        // alignment
+
+
+                        // Create a profile from the alignment and surface
+                        SettingsObjectLayer objectLayer = _CDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Profile);
+
+
+
+                        var profileViewID = ProfileView.Create(alignment.Id, insertionPoint, alignment.Name + "ProfileView", profileViewBandStyle.Id, profileViewStyle.Id);
+                        profileView = tr.GetObject(profileViewID, OpenMode.ForRead) as ProfileView;
+
+
+
+
+
+
+                        tr.Commit();
+
+
+
+                    }
+                    catch (System.Exception ex)
+                    {
+
+                    }
+
+                }
+            }
+
+            return profileView;
+        }
+
+
+        public static Corridor CreateCorridor(Alignment alignment, Profile prof, Assembly assembly)
+        {
+
+            Corridor corridor = null;
+            using (DocumentLock dockLock = _doc.LockDocument())
+            {
+                using (Transaction tr = _DB.TransactionManager.StartTransaction())
+                {
+                    try
+                    {
+
+                        
+
+              
+
+                      
+                        // Create a profile from the alignment and surface
+                        SettingsObjectLayer objectLayer = _CDoc.Settings.DrawingSettings.ObjectLayerSettings.GetObjectLayerSetting(SettingsObjectLayerType.Profile);
+
+
+                        // Create a new Corridor
+                   
+                        ObjectId newCorridorId = _CDoc.CorridorCollection.Add(alignment.Name +"-Corridor", "BaseLine", alignment.Id, prof.Id, "Region", assembly.Id);
+
+                         corridor = tr.GetObject(newCorridorId, OpenMode.ForWrite) as Corridor;
+
+
+                        corridor.Rebuild();
+
+                  
+                        tr.Commit();
+
+
+
+                    }
+                    catch (System.Exception ex)
+                    {
+                       
+                    }
+                }
+            }
+
+           return corridor;
+        }
+
+
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using DUA_WPF.Services;
+using System;
 using System.Collections.Generic;
 
 
@@ -21,8 +22,8 @@ namespace DUA_WPF.ViewModels
         private int _selectedAssemblyIndex;
 
        
-
-
+        public event Action<bool> ValidationChanged;
+      
         private int _selectedCorridorStyleIndex;
 
       
@@ -32,7 +33,7 @@ namespace DUA_WPF.ViewModels
         public string Name
         {
             get { return _name; }
-            set { _name = value; OnPropertyChanged(nameof(Name)); OnPropertyChanged(nameof(FullName)); }
+            set { _name = value; OnPropertyChanged(nameof(Name)); OnPropertyChanged(nameof(FullName)); OnPropertyChanged(nameof(IsValid)); }
         }
         public string Prefix
         {
@@ -53,16 +54,24 @@ namespace DUA_WPF.ViewModels
         public Assembly SelectedAssembly
         {
             get { return _assembly; }
-            set { _assembly = value; OnPropertyChanged(nameof(SelectedAssembly)); }
+            set { _assembly = value;
+                OnPropertyChanged(nameof(SelectedAssembly));
+            
+            }
         }
         public int SelectedCorridorStyleIndex
         {
             get { return _selectedCorridorStyleIndex; }
             set
             {
-                _selectedCorridorStyleIndex = value;
-                OnPropertyChanged(nameof(SelectedCorridorStyleIndex));
-                SelectedAssembly = Assemblies[_selectedCorridorStyleIndex];
+               
+                    _selectedCorridorStyleIndex = value;
+
+                    SelectedCorridor_Style = CorridorStyles[_selectedCorridorStyleIndex];
+                    OnPropertyChanged(nameof(SelectedCorridorStyleIndex));
+                    OnPropertyChanged(nameof(IsValid));
+                    ValidationChanged?.Invoke(IsValid);
+               
             }
         }
         public int SelectedAssemblyIndex
@@ -71,8 +80,11 @@ namespace DUA_WPF.ViewModels
             set
             {
                 _selectedAssemblyIndex = value;
-                OnPropertyChanged(nameof(SelectedAssemblyIndex));
+               
                 SelectedAssembly = Assemblies[_selectedAssemblyIndex];
+                OnPropertyChanged(nameof(SelectedAssemblyIndex));
+                OnPropertyChanged(nameof(IsValid));
+                ValidationChanged?.Invoke(IsValid);
             }
         }
         public List<CorridorStyle> CorridorStyles => _cADService.CorridorStyles;
@@ -107,6 +119,16 @@ namespace DUA_WPF.ViewModels
         {
             _cADService = cADService;
             Name = "Corridor";
+
+
+            if (CorridorStyles.Count > 0)
+            {
+                SelectedCorridorStyleIndex = 0;
+            }
+            if (Assemblies.Count > 0)
+            {
+                SelectedAssemblyIndex = 0;
+            }
         }
     }
 }

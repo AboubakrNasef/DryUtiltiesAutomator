@@ -111,6 +111,7 @@
     <Compile Include="DUA_Main.xaml.cs">
       <DependentUpon>DUA_Main.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Exception\NullException_EX.cs" />
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\TemplateModels\AlignmentTemplateModel.cs" />
     <Compile Include="Models\TemplateModels\CorridorStyleTemplateModel.cs" />

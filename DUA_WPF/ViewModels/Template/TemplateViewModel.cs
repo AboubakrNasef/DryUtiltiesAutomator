@@ -25,7 +25,7 @@ namespace DUA_WPF.ViewModels
 
         private CorridorStyleTemplateViewModel _corridorStyleTemplateModel;
 
-      
+
 
 
 
@@ -33,6 +33,18 @@ namespace DUA_WPF.ViewModels
         #endregion
 
         #region Commands
+        private bool _isEnabled;
+
+        public bool CanApplyEnabled
+        {
+            get { return _isEnabled; }
+            set { _isEnabled = value;
+
+            OnPropertyChanged(nameof(CanApplyEnabled));
+            
+            }
+        }
+
         public RelayCommand ButtonModeCommand { get; private set; }
         public RelayCommand EditCommand { get; }
         
@@ -93,10 +105,30 @@ namespace DUA_WPF.ViewModels
             ButtonModeCommand = new RelayCommand(_addTemplate,_canApply);
             ButtonModeContent = "Add";
             EditCommand = new RelayCommand(_editTemplateCommand);
+
+
+            _alignmentTemplateModel.ValidationChanged += ValidationChanged;
+            _profileTemplateModel.ValidationChanged += ValidationChanged;
+            _profileViewTemplateModel.ValidationChanged += ValidationChanged;
+            _corridorStyleTemplateModel.ValidationChanged += ValidationChanged;
+
+            CanApplyEnabled = _canApply();
+        }
+
+        private void ValidationChanged(bool obj)
+        {
+          
+                CanApplyEnabled = _canApply();
+            
+
+        
+           
         }
 
         private bool _canApply()
         {
+
+           
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrEmpty(Name))
             {
                 return false;
@@ -104,6 +136,7 @@ namespace DUA_WPF.ViewModels
 
             if (!AlignmentTemplate.IsValid || !ProfileTemplate.IsValid || !ProfileViewTemplate.IsValid || !CorridorStyleTemplate.IsValid)
             {
+          
                 return false;
             }
 

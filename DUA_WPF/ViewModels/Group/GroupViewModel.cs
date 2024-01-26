@@ -30,22 +30,74 @@ namespace DUA_WPF.ViewModels
         private ObservableCollection<GroupViewModel> _groups;
 
         #endregion
+
+        #region Commands
+        private bool _canApplyEnabled;
+
+        public bool CanApplyEnabled
+        {
+            get { return _canApplyEnabled; }
+            set
+            {
+                _canApplyEnabled = value;
+
+                OnPropertyChanged(nameof(CanApplyEnabled));
+
+            }
+        }
+
+        public RelayCommand ButtonModeCommand { get; private set; }
+        public RelayCommand EditCommand { get; }
+        public RelayCommand SelectLinesCommand { get; }
+        public RelayCommand ClearLayerCommand { get; }
+        #endregion
         #region Props
+        private string _buttonmodeContent;
+        private List<Polyline> polyLineFromLayer;
+        private List<Polyline> polyLinesFromSelection;
+
+        private List<string> _layers;
+        public string ButtonModeContent
+        {
+            get { return _buttonmodeContent; }
+            set { _buttonmodeContent = value; OnPropertyChanged(nameof(ButtonModeContent)); }
+        }
         public string Name
         {
             get { return _name; }
             set { _name = value;OnPropertyChanged(nameof(Name)); }
         }
-        public List<LayerTableRecord> Layers => _CADService.Layers;
+        public List<string> Layers => _layers;
+        private List<LayerTableRecord> _CadLayers => _CADService.Layers;
         public LayerTableRecord SelectedLayer
         {
             get { return _layer; }
-            set { _layer = value; OnPropertyChanged(nameof(SelectedLayer)); }
+            set { _layer = value;
+
+                GetPolylinesFromLayer();
+                CanApplyEnabled = _canApply();
+                OnPropertyChanged(nameof(SelectedLayer)); }
         }
-        public ObservableCollection<Polyline> Polylines
+
+        private void GetPolylinesFromLayer()
         {
-            get { return _lines; }
-            set { _lines = value; OnPropertyChanged(nameof(Polylines)); }
+            if (SelectedLayer ==null)
+            {
+          polyLineFromLayer.Clear();
+
+            }
+            else
+            {
+
+            polyLineFromLayer =  _CADService.GetPolylinesFromLayer(SelectedLayer);
+            }
+            OnPropertyChanged(nameof(Polylines));
+        }
+
+        public List<Polyline> Polylines
+        {
+            get { return new List<Polyline>(polyLineFromLayer).Union(polyLinesFromSelection).ToList(); }
+           
         }
         public ObservableCollection<TemplateViewModel> Templates=> _templateService.Templates;
         public TemplateViewModel SelectedTemplate
@@ -59,7 +111,16 @@ namespace DUA_WPF.ViewModels
             set
             {
                 _selectedLayerIndex = value;
-                SelectedLayer = Layers[_selectedLayerIndex];
+                if (_selectedLayerIndex ==0)
+                {
+                SelectedLayer = null;
+
+                }
+                else
+                {
+
+                SelectedLayer = _CadLayers[_selectedLayerIndex-1];
+                }
                 OnPropertyChanged(nameof(SelectedLayerIndex));
                 OnPropertyChanged(nameof(SelectedLayer));
             }
@@ -76,9 +137,7 @@ namespace DUA_WPF.ViewModels
             }
         }
         #endregion
-        #region Commands
-        public RelayCommand AddGroup { get;  }
-        #endregion
+       
 
         public GroupViewModel(ICADService cADService,ITemplateService templateService,IModalService modalService,ObservableCollection<GroupViewModel> groups)
         {
@@ -87,7 +146,35 @@ namespace DUA_WPF.ViewModels
             _modalService = modalService;
             _CADService = cADService;
             _groups= groups;
-            AddGroup = new RelayCommand(_addGroup);
+          
+            ButtonModeCommand = new RelayCommand(_addGroup);
+            ButtonModeContent = "Add";
+            EditCommand = new RelayCommand(_editGroupCommand);
+            CanApplyEnabled = _canApply();
+            SelectLinesCommand = new RelayCommand(_selectLines);
+         
+            polyLineFromLayer = new List<Polyline>();
+            polyLinesFromSelection = new List<Polyline>();
+            SelectedTemplateIndex = 0;
+            SelectedLayerIndex = 0;
+         _layers=   new List<string>().Append("--None--").Concat(_CadLayers.Select(layer => layer.Name)).ToList();
+        }
+
+     
+
+        private void _selectLines()
+        {
+            polyLinesFromSelection = _CADService.GetSelectedPolylines();
+            CanApplyEnabled = _canApply();
+            OnPropertyChanged(nameof(Polylines));
+        }
+
+        private void _editGroupCommand()
+        {
+            ButtonModeCommand = new RelayCommand(_applyEditTemplate);
+            
+              ButtonModeContent = "Apply Edit";
+            _modalService.OpenModal(this);
         }
 
         private void _addGroup()
@@ -97,5 +184,29 @@ namespace DUA_WPF.ViewModels
 
 
         }
+        private void _applyEditTemplate()
+        {
+
+            _modalService.CloseModal();
+
+        }
+        private bool _canApply()
+        {
+
+
+            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrEmpty(Name))
+            {
+                return false;
+            }
+
+            if (SelectedTemplate ==null|| Polylines.Count<1)
+            {
+
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

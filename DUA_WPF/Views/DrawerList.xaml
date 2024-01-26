@@ -6,7 +6,10 @@
              xmlns:local="clr-namespace:DUA_WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <Border BorderThickness="0 0 1 0" BorderBrush="#333333">
+        
     <ListBox ItemsSource="{Binding DrawerItems}" SelectedIndex="{Binding SelectedIndex}">
        
     </ListBox>
+    </Border>
 </UserControl>

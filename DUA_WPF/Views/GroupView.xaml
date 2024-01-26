@@ -7,22 +7,23 @@
           xmlns:vm ="clr-namespace:DUA_WPF.ViewModels"
               xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="400" d:DesignWidth="400">
+    <Grid Margin="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*" MinWidth="150"/>
             <ColumnDefinition Width="auto" MinWidth="60"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="Name: " VerticalAlignment="Center"/>
-        <TextBox Grid.Column="1" VerticalAlignment="Center" Text="{Binding Name}"></TextBox>
+        <TextBox  Margin="5" Grid.Column="1" VerticalAlignment="Center" Text="{Binding Name}"></TextBox>
         
         <TextBlock Grid.Row="1" Text="Template: " VerticalAlignment="Center"/>
         <ComboBox  Margin="5" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding Templates}" SelectedIndex="{Binding SelectedTemplateIndex}">
@@ -32,23 +33,24 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        
         <TextBlock  Grid.Row="2" Text="Add From Layer: " VerticalAlignment="Center"/>
         <ComboBox Margin="5" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding Layers}" SelectedIndex="{Binding SelectedLayerIndex}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate >
-                    <TextBlock Text="{Binding Name}"></TextBlock>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
+           
+            
+            
+        
         </ComboBox>
 
 
         <TextBlock Grid.Row="3" Text="Add From Drawing: " VerticalAlignment="Center"/>
-        <Button Grid.Row="3" Margin="5"  Grid.Column="1" HorizontalAlignment="Center" MinWidth="40" MinHeight="40" VerticalAlignment="Center">
-            
-        <materialDesign:PackIcon  Kind="Mouse"  />
+        <Button Command="{Binding SelectLinesCommand}" Grid.Row="3" Margin="5"  Grid.Column="1" HorizontalAlignment="Left" MinWidth="40" MinHeight="40" VerticalAlignment="Center">
+           <materialDesign:PackIcon  Kind="Mouse"  />
         </Button>
 
-        <Button Command="{Binding AddGroup}" Content="Add" Grid.Row="4"  Grid.Column="2" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"></Button>
+        <TextBlock Grid.Row="4" Text="Selected PolyLines:    " VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Polylines.Count}" VerticalAlignment="Center"/>
+
+
+        <Button Command="{Binding ButtonModeCommand}" IsEnabled="{Binding CanApplyEnabled}" Content="{Binding ButtonModeContent}" Grid.Row="5"  Grid.Column="2" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center"></Button>
     </Grid>
 </UserControl>
